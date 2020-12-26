@@ -1,0 +1,38 @@
+WELCOME to README
+
+This simple program counts each word in any given file. 
+The count of the words are arranged in descending order. The program must take file name as its first argument.
+As for this assignments I had to do alot of internet digging. Making the project compatible with python3 was alittle challenging, otherthan that sorting was also alittle challenge.
+Other than that everything else went smooth.
+As a result of explaination I have included some comments in my program as to what I am doing so that it makes more sense to whoever reads my program.
+
+The usage of the program has been given below:
+
+usage: python3 wf.py [filename]
+
+for example:
+
+python3 wf.py Gettysburg-Address.txt
+
+Files included:
+wf.py
+README	
+Gettysburg-Address.txt
+Through-the-Looking-Glass.txt	
+Alice-in-Wonderland.txt		
+Gift-of-the-Magi.txt	
+Tom-Sawyer-Abroad.txt
+Antony-and-Cleopatra.txt	
+Idaho-House-Bill.txt	
+US-Constitution.txt
+Bill-of-Rights.txt		
+Leaves-of-Grass.txt		
+eula.txt
+Clinton-93-speech.txt		
+Netscape-License.txt	
+gpl.txt
+Decl-of-Ind-USA.txt		
+Patrick-Henry.txt		
+sample.txt
+Flatland.txt					
+stateofIdaho.txt	
