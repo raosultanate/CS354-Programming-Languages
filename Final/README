@@ -1,0 +1,257 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Design:
+
+So for this design, I decided to implement bitwise functionality in my interpreter. The reason I decided to add this functionality was because it already supported basic arithmetic operations like ‘+’, ‘-‘, ‘*’ and ‘/’. So, it was basically acting more like a calculator so far. This semester I also took ECE330 and we had to do a lot of bitwise stuff especially in Assembly and C and this brought me some inspiration that that it would be cool to add basic bitwise functionality in my code which would allow me to conduct basic operations with the following defined symbols in my code:
+
+'&' = Bitwise ‘And’
+ '|' = Bitwise ‘OR’
+ '^' = Bitwise ‘exclusive OR’
+'~' = Bitwise ‘Not’
+'<<' = Bitwise ‘logical shift left’
+'>>' = Bitwise ‘logical shift right’
+
+
+In order to achieve this feature, I definitely had to add a few things to my grammar. And thus, I started implementing what I already knew which that was to parse these operators and before I could even parse, I had to make sure my scanner would recognize these operators. Therefore, starting with step number 1.
+
+
+Step 1) Add the above operators to the scanner that way scanner recognizes these operators as operators when the program runs. This was achieved with the updating of following code in the scanner from i5:
+
+operators = {'=','+','-','*','/','(',')',';','<','<=','>','>=','<>','==', '&', '|', '^', '~', '<<', '>>'}
+
+
+
+Step 2) Now that we are done with scanner, I knew that I would have to parse them and thus in my parser I quickly implemented prarseBitop function which would return me NodeBitop based on whatever bitwise operator operation is provided by the user. And thus, this was done and the function looked like this:
+
+
+def parseBitop(self):
+        if self.curr() == Token("&"):
+            self.match("&")
+            return NodeBitop(self.pos(), "&")
+        if self.curr() == Token("|"):
+            self.match("|")
+            return NodeBitop(self.pos(), "|")  
+        if self.curr() == Token("^"):
+            self.match("^")
+            return NodeBitop(self.pos(), "^") 
+        if self.curr() == Token("<<"):
+            self.match("<<")
+            return NodeBitop(self.pos(), "<<") 
+        if self.curr() == Token(">>"):
+            self.match(">>")
+            return NodeBitop(self.pos(), ">>") 
+
+
+
+Step 3) Now that this was ready, I knew that my tree was broken because as my program begins parsing the tree from top to bottom with the already implemented Nodes, I knew that I would have to extend my grammar in a way such that this would be possible. And this brought me to another realization that there was not much difference between “a = 4 + 3” and “a = 4 & 3” as an expression apart from the operator and that these expressions would produce different result. I was confirmed that parseAssn was still the same by looking at the above expression
+Thus, I decided to connect my tree to parseBitop through parseExpr. And this was where some alternation had to be made.
+
+def parseExpr(self):
+        term = self.parseTerm() 
+        bitop = self.parseBitop() 
+        addop = self.parseAddop() 
+
+        if addop == None and bitop == None:
+            return NodeExpr(term, None, None)
+        else:
+            expr = self.parseExpr() 
+            if(addop is not None):
+                expr.append(NodeExpr(term, addop, None))
+                return expr
+            else:
+                expr.append(NodeExpr(term, bitop, None))
+                return expr
+
+
+Understanding code for parseExpr(self) assuming that we have the required nodes: 
+
+Now that this code has been provided, let’s try to understand what’s going on.
+If we were to parse “a = 4 & 3”, self.parseTerm() would quickly run down the tree and return me a 4 in term. 
+
+After this self.parseBitop() returns me the ‘&’ operator as the parser runs and returns me the Node version of ‘&’
+
+Now parseAddop() wants to run and it does but it returns a None because there is no ‘+’ sign
+
+Furthur as if condition is read it fails because bitop at that point contains ‘&’ operator.
+
+This gets us in the first else condition of the method and as soon as the next line is read we go into self self recursion as the program calls self.parseExpr().
+
+Now the self.parseTerm() returns a ‘3’ and to term variable and both the self.bitop() and self.addop() return a None to their respective variables.
+
+First if condition passes based on the successful conditions provided in its parameter and the node is returned which is NodeExpr with the term ‘3’ and we come out of recursion which we went into on step e) and is assigned to expr
+
+Now the inner if condition fails as addop is still none and the else runs again which appends expr containing the term with ‘3’ and NodeExpr with term ‘4’ and bitop as ‘&’
+
+
+Now that we have successfully integrated the code with the tree its time to look at the tree which currently looks like:
+Notice: Notice bitop and expr
+
+
+prog     : block
+block    : stmt ';' block
+         | stmt
+stmt     : assn
+         | 'rd' id
+         | 'wr' expr
+         | 'if' boolexpr 'then' stmt
+         | 'if' boolexpr 'then' stmt 'else' stmt
+         | 'while' boolexpr 'do' stmt
+         | 'begin' block 'end'
+	  | 'def' id '(' id ')' '=' expr
+
+assn     : id '=' expr
+expr     : term addop expr
+         | term bitop expr
+         | term
+term     : fact mulop term
+         | fact
+fact     : id 
+         | num
+         | '(' expr ')'
+         | '-' fact
+         | id '(' expr ')'
+boolexpr : expr relop expr
+addop    : '+'
+         | '-'
+mulop    : '*'
+         | '/'
+relop    : '<'
+         | '<='
+         | '>'
+         | '>='
+         | '<>'
+         | '=='
+bitop    : '&'
+         | '|'
+         | '~'
+         | '^'
+         | '>>'
+         | '<<'
+
+Step 4) Now that these changes were made successfully, it was time to implement the their respective nodes class which was done in pl_node.py file
+
+class NodeBitop(Node):
+
+    def __init__(self, pos, bitop):
+        super(NodeBitop, self).__init__()
+        self.pos = pos
+        self.bitop = bitop
+
+    def op(self, o1, o2):
+        if self.bitop == "&":
+            result = int(o1) & int(o2)
+            return result
+        if self.bitop == "|":
+            result = int(o1) | int(o2)
+            return result
+        if self.bitop == "^":
+            result = int(o1) ^ int(o2)
+            return result
+        if self.bitop == ">>":
+            result = int(o1) >> int(o2)
+            return result
+        if self.bitop == "<<":
+            result = int(o1) << int(o2)
+            return result
+        raise EvalException(self.pos, "bogus bitop: " + self.bitop)
+
+
+The code above basically returned the NodeBitop to the parser based on whichever bitwise operator it was provided. The function here basically operates on the the values o1 and o2 with the desired bitwise operator. Now lets see who calls it.
+
+
+Step 5) Turns out it’s the NodeExpr eval that calls the op based on whatever operator it operates on. Now that this was clear all I did in NodeExpr was alter the name from addop to oper and this was as follows:
+
+class NodeExpr(Node):
+
+    def __init__(self, term, oper, expr):
+        super(NodeExpr, self).__init__()
+        self.term = term 
+        self.oper = oper
+        self.expr = expr
+
+    def append(self, expr):
+        if self.expr is None:
+            self.oper = expr.oper
+            self.expr = expr
+            expr.oper = None
+        else:
+            self.expr.append(expr)        
+
+    def eval(self, env):
+        return self.term.eval(env) if self.expr is None else self.oper.op(self.expr.eval(env), self.term.eval(env))
+
+
+
+Now that everthing was implemented and was assumed to work it was time to Test
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Testing:
+
+python3 interpreter.py "a=4&3; wr a"
+
+expected result: 
+4 = 100(2) [Base 2 in binary] … eqn1
+3 = 011(2) [Base 2 in binary] …eqn 2
+
+= 0 [Note as eqn1 ‘AND’ eqn2 results in 000(2)]
+
+Result upon executing the code: 0
+
+*********************************************************************		
+
+python3 interpreter.py "a=4|3; wr a"
+
+expected result: 
+4 = 100(2) [Base 2 in binary] … eqn1
+3 = 011(2) [Base 2 in binary] …eqn 2
+
+= 7 [Note as eqn1 ‘OR’ eqn2 results in 111(2)]
+
+Result upon executing the code: 7
+
+*********************************************************************		
+
+python3 interpreter.py "a=7^3; wr a"
+
+expected result: 
+7 = 111(2) [Base 2 in binary] … eqn1
+3 = 011(2) [Base 2 in binary] …eqn 2
+
+And both results in 4 [Note as eqn1 ‘XOR’ eqn2 results in 100(2)]
+
+Result upon executing the code: 4
+
+*********************************************************************		
+
+python3 interpreter.py "a=4<<3; wr a"
+
+expected result: 
+4 = 100(2) [Base 2 in binary] … eqn1
+3 = 011(2) [Base 2 in binary] …eqn 2
+
+= 32 [Note as eqn1 is left shifted by eqn2 results in 100000(2)]
+
+Result upon executing the code: 32
+
+*********************************************************************		
+
+python3 interpreter.py "a=4>>3; wr a"
+
+expected result: 
+4 = 100(2) [Base 2 in binary] … eqn1
+3 = 011(2) [Base 2 in binary] …eqn 2
+
+= 0 [Note as eqn1 is right shifted by eqn2 results in 0(2)]
+
+Result upon executing the code: 32
+
+Note: Everything works correctly thus implementation is successful. Also code has been provided.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Common struggle:
+
+It was a little challenge to go back and understand how the tree was being parsed but once I understood the flow it was much easier to rewrite parseExpr in the parser. 
+I think altering that was definitely challenge and required some time to think and work through the tree. Other stuff wasn’t too hard to implement.
+
+

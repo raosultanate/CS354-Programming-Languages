@@ -1,0 +1,79 @@
+
+
+•	P16:3 Why are there so many programming languages?
+Different programming languages serves different purpose for all different kinds of jobs. Under the hood if we look at, they are really doing what we expect them to do which is interact with processor to do general mathematical operations on 1’s and 0’s. It’s like how we have different types of cars which is like sedan, a tractor and maybe an airplane. These all help us to take us from point A to point B however each one of them serve a very specific purpose in our day to day life.
+
+
+•	P16:4: What makes a programming language successful?
+Some of the reasons are described below:
+
+a)	Economic: Some of the older languages such as COBOL which is still used by our banking infrastructures still persists just because its very difficult to be replaced. And thus people who learn it are high in demand. It just costs too much for these companies to replace the installed software and programmer enterprise that they just prefer to stick to the one they initially started with.
+b)	Excellent Compilers: One of the things a good compiler can do is generate fast code, especially for large projects. And when it comes to this Fortran as shown outstanding performance and much of the credit goes to a lot of companies who have invested their time and money in making compilers that can generate code faster.
+c)	Ease of implementation: And in this BASIC really wins the race. BASIC was very successful because it could be implemented on tiny machine without much resources. And right on the side comes PASCAL which leads also because the person (Niklaus Wirth) who developed a simple and portable implementation shipped it all over the world across the universities.
+d)	Ease of the use for the Novice: Part of the success also comes due to the low learning curve. PASCAL was taught due to this and later came JAVA and Python.
+Though JAVA was more complex than PASCAL it was still much easier to pick up than C++. In recent years it seems like there is a strong shift towards python for most institutions that teach their introductory course for a programming language.
+e)	Open Source. C tends to lead in this one as one of the most dominated language especially when it comes to learning and implementing problems in systems programming. Most programming languages today has at least one open source compiler or interpreter, but as of C it is much more related with the definition of free distribution and peer reviewed community supported computing.
+
+
+
+
+
+
+
+
+•	P16:6: What distinguishes declarative languages from imperative ones?
+Differences are given as follows: 
+Declarative languages: 
+With declarative programming you tell the compiler what you want and not necessarily tell the compiler how to get there. Declarative in some sense higher level as they are more in tune with the programmer’s point of view and less with the implementers point of view.
+Some of the examples of a declarative programming languages are PROLOG, SQL
+Imperative languages:
+With imperative programming we will tell the compiler about what happen next step by step which in other words we can say we tell the compiler about the data flow. Imperative predominate mainly because of performance. And this is where computer scientists mainly focus on. Its all about performance. 
+Some of the example of imperative programming languages are Java, C, PHP, Fortran etc.
+
+
+•	P25:11: Explain the distinction between interpretation and compilation. What are the comparative advantages and disadvantages of both?
+The compiler translates high-level Source program into machine language code. At some point the user tells the operating system to turn the target program. A compiler controls the process during compilation and the target program controls the process during the execution of the program. One of its disadvantages is that it's not as flexible and better at diagnostics as the interpreters are. And on the other side it can lead to better performance. In general, a decision made at compile time is a decision that does not need to be made at runtime.
+
+Unlike a compiler and interpreter, it stays around for the execution of the application.  inside The Interpreter is the locus of control during that execution in effect The Interpreter implements a virtual machine whose machine language is the high-level programming language The Interpreter reads statements in that language more or less one at a time executing them as it goes along. Interpreters leads to Greater flexibility and better Diagnostics and they can also include an excellent source level debugger One of the disadvantages is that it can be a little slower in performance. Since program is compiled only once but generally executed many times the savings can be substantial particularly if The Interpreter is doing unnecessary work in every iteration of a loop.
+
+•	P25:12: Is Java compiled or interpreted? Or Both? How do you know?
+Java is both a compiled and interpreted language which is because it generates a file often called as byte code JRE can understand. Byte code is then interpreted by the JVM making it as interpreted language.
+
+
+
+
+
+
+
+•	P36:24 Describe the form in which the scanner is passed from the scanner to the parser; from the parser to the semantic analyzer; from the semantic analyzer to the intermediate code generator.
+At first a character stream is passed inside the scanner and then the scanner takes the tokens stream and passes it into the parser the parser builds a parse tree and passes it into semantic analysis and intermediate code generation. This is the phase where the intermediate code is generated. The first few phases up to semantic analysis serve to figure out the meaning of the source program. The last few phases build machine code.
+
+•	p38:1.1: 1.1 Errors in a computer program can be classified according to when they are de-
+tected and, if they are detected at compile time, what part of the compiler detects
+them. Using your favorite imperative language, give an example of each of the
+following.
+
+•	Language used: java
+o	(a) A lexical error, detected by the scanner
+String 1str = “hello”; //string beginning with a number.
+o	(b) A syntax error, detected by the parser
+int a = 1//Missing ‘;’ at the end of a statement.
+o	(c) A static semantic error, detected by semantic analysis
+arr[2.5] //using double to get something at a specific index in the array.
+
+o	(d) A dynamic semantic error, detected by code generated by the compiler
+int [] array = new int [100];
+array [100] = 25;
+
+100 is illegal index.
+o	(e) An error that the compiler can neither catch nor easily generate code to catch (this should be a violation of the language definition, not just a program bug)
+int x;
+if (false)
+{
+x =10;
+system.out.println(“Error”);
+}
+
+Here, the value of x is unreachable, and yet error will not be reported.
+
+
